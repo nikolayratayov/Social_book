@@ -8,7 +8,10 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='signin')
 def index(request):
-    user_profile = Profile.objects.get(user=request.user)
+    if request.user.is_superuser:
+        user_profile = None
+    else:
+        user_profile = Profile.objects.get(user=request.user)
     return render(request, 'index.html', {'user_profile': user_profile})
 
 
@@ -80,3 +83,7 @@ def settings(request):
         user_profile.save()
         return redirect('settings')
     return render(request, 'setting.html', {'user_profile': user_profile})
+
+
+def upload(request):
+    return HttpResponse('<h1>Upload view</h1>')

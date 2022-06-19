@@ -12,7 +12,8 @@ def index(request):
         user_profile = None
     else:
         user_profile = Profile.objects.get(user=request.user)
-    return render(request, 'index.html', {'user_profile': user_profile})
+    posts = Post.objects.all()
+    return render(request, 'index.html', {'user_profile': user_profile, 'posts': posts})
 
 
 def signup(request):

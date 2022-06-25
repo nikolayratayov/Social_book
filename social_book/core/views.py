@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from .models import Profile, Post, LikePost, FollowersCount
 from django.contrib.auth.decorators import login_required
+from itertools import chain
 
 
 @login_required(login_url='signin')
@@ -13,7 +14,16 @@ def index(request):
     else:
         user_profile = Profile.objects.get(user=request.user)
     posts = Post.objects.all()
-    return render(request, 'index.html', {'user_profile': user_profile, 'posts': posts})
+    user_following_list = []
+    feed = []
+    user_following = FollowersCount.objects.filter(follower=request.user.username)
+    for users in user_following:
+        user_following_list.append(users.user)
+    for usernames in user_following_list:
+        feed_lists = Post.objects.filter(user=usernames)
+        feed.append(feed_lists)
+    feed_list = list(chain(*feed))
+    return render(request, 'index.html', {'user_profile': user_profile, 'posts': feed_list})
 
 
 def signup(request):
